@@ -6,6 +6,8 @@ import torch
 from diffusers import StableDiffusionXLPipeline
 from diffusers import StableDiffusionXLImg2ImgPipeline
 from diffusers.utils import load_image
+from diffusers.schedulers import DDPMScheduler, DPMSolverMultistepScheduler
+
 
 #https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/text2img#diffusers.StableDiffusionPipeline
 # https://huggingface.co/docs/diffusers/v0.19.3/api/pipelines/stable_diffusion/stable_diffusion_xl
@@ -15,9 +17,10 @@ from diffusers.utils import load_image
 
 @st.cache_resource
 def load_base_model():
-    base_pipeline = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
+    base_pipeline = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", 
+                                                              torch_dtype=torch.float16)
     base_pipeline = base_pipeline.to("mps")
-
+    base_pipeline.scheduler = DPMSolverMultistepScheduler.from_config(base_pipeline.scheduler.config)
     return base_pipeline
 
 @st.cache_resource
@@ -91,11 +94,14 @@ def main():
 
     if st.button("Process", key="1"):
 
-        if seed_input.isdigit():
-            generator = torch.Generator(device="mps").manual_seed(int(seed_input))
+        if enable_manual_seed:
+            if seed_input.isdigit():
+                generator = torch.Generator(device="mps").manual_seed(int(seed_input))
+            else:
+                st.warning('Seed value is not a integer, proceesing with random seed', icon="⚠️")
+                generator = torch.Generator(device="mps")
         else:
-            st.warning('Seed value is not a integer, proceesing with random seed', icon="⚠️")
-            generator = torch.Generator(device="mps")
+             generator = torch.Generator(device="mps")
 
         st.write("Processing prompt : ", prompt, " with negative prompt : ", negative_prompt)
         base_model_bar = st.progress(0, "Base Model generation progress")
