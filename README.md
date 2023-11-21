@@ -4,6 +4,9 @@ A repo in which customized stable diffusion GUI with simplified use cases are de
 A simple Graphical user interface developed using streamlit that allows the user to generate images using Stable Diffusion XL (SDXL) model using positive and negative prompts. User have the option to enable the refiner model of SDXL as well. Other control parameters available to user are number of inference steps, number of images to generate per prompt and guidance scale. There is also an option to set manual seed for reporoducibility. A progress bar is shown for base as well as refiner model to show the progress during image generation.
 
 
+![Example 1](./images/SD%20Screenshot.png)
+![Example 2](./images/SD%20Screenshot2.png)
+![Example 3](./images/SD%20Screenshot3.png)
 
 
 ## To Do
